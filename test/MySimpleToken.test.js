@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Greeter", function () {
+describe("MySimpleToken", function () {
     const initialSupply = 1000000;
     let MySimpleToken;
     let alice;
@@ -38,7 +38,7 @@ describe("Greeter", function () {
         }
     })
 
-    it("Should allow the owner to mint tokens", async () => {
+    it("Should allow the minter to mint tokens", async () => {
         const tokensToMint = 100;
         const bobAddress = await bob.getAddress();
         const balanceOfBobBeforeMinting = await hardhatMySimpleToken.balanceOf(bobAddress);
@@ -89,7 +89,6 @@ describe("Greeter", function () {
         const balanceOfBobAfterTransfer = await hardhatMySimpleToken.balanceOf(bobAddress);
         expect(balanceOfAliceBeforeTransfer.toNumber() - amountToTransfer)
             .to.equal(balanceOfAliceAfterTransfer.toNumber(), "Alice' balance should have decreased by " + amountToTransfer + " after transfer")
-
         expect(balanceOfBobBeforeTransfer.toNumber() + amountToTransfer)
             .to.equal(balanceOfBobAfterTransfer.toNumber(), "Bob's balance should have increased by " + amountToTransfer + " after transfer");
     })
@@ -119,6 +118,7 @@ describe("Greeter", function () {
         const bobAddress = await bob.getAddress();
         const balanceOfAlice = await hardhatMySimpleToken.balanceOf(aliceAddress);
         const amountToTransfer = balanceOfAlice + 1;
+
         try {
             await hardhatMySimpleToken.transfer(bobAddress, amountToTransfer);
         } catch (error) {
@@ -132,6 +132,7 @@ describe("Greeter", function () {
         const bobAddress = await bob.getAddress();
         const balanceOfAlice = await hardhatMySimpleToken.balanceOf(aliceAddress);
         const amountToTransfer = balanceOfAlice.toNumber() + 1;
+
         try {
             await hardhatMySimpleToken.transferFrom(aliceAddress, bobAddress, amountToTransfer);
         } catch (error) {
@@ -150,8 +151,9 @@ describe("Greeter", function () {
     })
 
     it("Should not allow to overflow total supply", async () => {
+        const aliceAddress = await alice.getAddress();
+
         try {
-            const aliceAddress = await alice.getAddress();
             await hardhatMySimpleToken.mint(aliceAddress, ethers.constants.MaxUint256);
         } catch (error) {
             expect("VM Exception while processing transaction: reverted with panic code 0x11 (Arithmetic operation underflowed or overflowed outside of an unchecked block)")
@@ -160,10 +162,11 @@ describe("Greeter", function () {
     })
 
     it("Should not allow to burn more tokens than a caller posesses", async () => {
+        const aliceAddress = await alice.getAddress();
+        const aliceBalance = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const tokensToBurn = aliceBalance.toNumber() + 1;
+        
         try {
-            const aliceAddress = await alice.getAddress();
-            const aliceBalance = await hardhatMySimpleToken.balanceOf(aliceAddress);
-            const tokensToBurn = aliceBalance.toNumber() + 1;
             await hardhatMySimpleToken.burn(tokensToBurn);
         } catch (error) {
             expect("VM Exception while processing transaction: reverted with reason string 'The caller does not hold sufficient amount of tokens'")

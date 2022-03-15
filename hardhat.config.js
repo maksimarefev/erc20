@@ -1,24 +1,21 @@
-//require('dotenv').config();
 require('solidity-coverage');
 require("./tasks/approve.js");
 require("./tasks/transfer.js");
 require("./tasks/transferFrom.js");
-
-/*const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const INFURA_API_KEY = process.env.INFURA_API_KEY;*/
+require("@nomiclabs/hardhat-etherscan");
+const { PRIVATE_KEY, INFURA_API_KEY, ETHERSCAN_API_KEY } = require('./secret.json');
 
 module.exports = {
     solidity: "0.8.0",
-/*    networks: {
-      kovan: {
-        url: "https://kovan.infura.io/v3/" + INFURA_API_KEY,
+    networks: {
+      rinkeby: {
+        url: "https://rinkeby.infura.io/v3/" + INFURA_API_KEY,
         accounts: [`0x${PRIVATE_KEY}`]
       }
     },
-    paths: {
-        sources: "./contracts",
-        tests: "./test",
-        cache: "./cache",
-        artifacts: "./artifacts"
-    }*/
+    etherscan: {
+        apiKey: {
+            rinkeby: ETHERSCAN_API_KEY
+        }
+    }
 };

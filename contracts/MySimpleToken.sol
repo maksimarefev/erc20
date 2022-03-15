@@ -88,7 +88,7 @@ contract MySimpleToken is IERC20 {
 
     uint256 private _totalSupply;
 
-    mapping(address => uint256) private balances;
+    mapping(address => uint256) private _balances;
 
     /**
      * @dev X => Y => A means that the X has allowed the Y to transfer the A amount of the X's tokens
@@ -109,9 +109,9 @@ contract MySimpleToken is IERC20 {
     }
 
     function burn(uint256 amount) external override {
-        require(balances[msg.sender] >= amount, 'The caller does not hold sufficient amount of tokens');
+        require(_balances[msg.sender] >= amount, 'The caller does not hold sufficient amount of tokens');
 
-        balances[msg.sender] -= amount;
+        _balances[msg.sender] -= amount;
         _totalSupply -= amount;
 
         emit Transfer(msg.sender, address(0), amount);
@@ -119,10 +119,10 @@ contract MySimpleToken is IERC20 {
 
     function transfer(address to, uint tokens) public override returns (bool) {
         require(to != address(0), "Transfer to the zero address is not allowed");
-        require(balances[msg.sender] >= tokens, 'Sender account does not hold sufficient balance');
+        require(_balances[msg.sender] >= tokens, 'Sender account does not hold sufficient balance');
 
-        balances[msg.sender] -= tokens;
-        balances[to] += tokens;
+        _balances[msg.sender] -= tokens;
+        _balances[to] += tokens;
 
         emit Transfer(msg.sender, to, tokens);
 
@@ -139,12 +139,12 @@ contract MySimpleToken is IERC20 {
 
     function transferFrom(address from, address to, uint tokens) public override returns (bool) {
         require(to != address(0), "Transfer to the zero address is not allowed");
-        require(balances[from] >= tokens, 'Source address does not hold sufficient balance');
+        require(_balances[from] >= tokens, 'Source address does not hold sufficient balance');
         require(_allowance[from][msg.sender] >= tokens, 'The caller is not allowed to transfer that amount of tokens');
 
-        balances[from] -= tokens;
+        _balances[from] -= tokens;
         _allowance[from][msg.sender] -= tokens;
-        balances[to] += tokens;
+        _balances[to] += tokens;
 
         emit Transfer(from, to, tokens);
 
@@ -155,7 +155,7 @@ contract MySimpleToken is IERC20 {
         require(to != address(0), "Minting to zero address is not allowed");
 
         _totalSupply += amount;
-        balances[to] += amount;
+        _balances[to] += amount;
 
         emit Transfer(address(0), to, amount);
     }
@@ -173,7 +173,7 @@ contract MySimpleToken is IERC20 {
     }
 
     function balanceOf(address tokenOwner) public override view returns (uint) {
-        return balances[tokenOwner];
+        return _balances[tokenOwner];
     }
 
     function name() public override view returns (string memory) {
