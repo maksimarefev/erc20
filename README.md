@@ -26,10 +26,10 @@ From the root folder run ``` npx hardhat coverage ```
 ## Current test and coverage results for *i7-8550U 1.80GHz/16Gb RAM/WIN10 x64*
 ```
 MySimpleToken
-√ Should not allow a non-minter to mint tokens (71ms)
-√ Should allow the owner to mint tokens (64ms)
-√ Should allow to burn owned tokens (44ms)
-√ Should allow to transfer approved tokens (94ms)
+√ Should not allow a non-minter to mint tokens (63ms)
+√ Should allow the minter to mint tokens (67ms)
+√ Should allow to burn owned tokens
+√ Should allow to transfer approved tokens (99ms)
 √ Should allow to transfer owned tokens (66ms)
 √ Should not allow to transfer insufficient amount of tokens
 √ Should not allow to transferFrom insufficient amount of tokens
@@ -42,14 +42,17 @@ MySimpleToken
 √ Should allow to transferFrom 0 tokens
 √ Should not allow to transfer to the zero address
 √ Should not allow to transferFrom to the zero address
+√ Should return valid minter
+√ Should return valid name
+√ Should return valid symbol
+√ Should return valid decimals
 ```
 | File                 | % Stmts    | % Branch   | % Funcs    | % Lines    | Uncovered Lines  |
 |----------------------|------------|------------|------------|------------|------------------|
-| contracts\           | 89.47      | 100        | 71.43      | 89.74      |                  |
-| MySimpleToken.sol    | 89.47      | 100        | 71.43      | 89.74      | 168,180,184,188  |
+| contracts\           | 100        | 100        | 100        | 100        |                  |
+| MySimpleToken.sol    | 100        | 100        | 100        | 100        |                  |
 | -------------------- | ---------- | ---------- | ---------- | ---------- | ---------------- |
-| All files            | 89.47      | 100        | 71.43      | 89.74      |                  |
-
+| All files            | 100        | 100        | 100        | 100        |                  |
 ## Project dependencies
 * @nomiclabs/ethereumjs-vm#4.2.2,
 * @nomiclabs/hardhat-ethers#2.0.5,

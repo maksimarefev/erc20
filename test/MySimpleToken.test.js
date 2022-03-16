@@ -29,8 +29,9 @@ describe("MySimpleToken", function () {
     }
 
     it("Should not allow a non-minter to mint tokens", async () => {
+        const bobAddress = await bob.getAddress();
+
         try {
-            const bobAddress = await bob.getAddress();
             await hardhatMySimpleToken.connect(bob).mint(bobAddress, 10);
         } catch (error) {
             expect("VM Exception while processing transaction: reverted with reason string 'Only the minter is allowed to perform that operation'")
@@ -243,5 +244,31 @@ describe("MySimpleToken", function () {
             expect("VM Exception while processing transaction: reverted with reason string 'Transfer to the zero address is not allowed'")
                 .to.equal(error.message, "Invalid error message");
         }
+    })
+
+    it("Should return valid minter", async () => {
+        const aliceAddress = await alice.getAddress();
+
+        const minter = await hardhatMySimpleToken.minter();
+
+        expect(aliceAddress).to.equal(minter);
+    })
+
+    it("Should return valid name", async () => {
+        const name = await hardhatMySimpleToken.name();
+
+        expect("MySimpleToken").to.equal(name);
+    })
+
+    it("Should return valid symbol", async () => {
+        const symbol = await hardhatMySimpleToken.symbol();
+
+        expect("MST").to.equal(symbol);
+    })
+
+    it("Should return valid decimals", async () => {
+        const decimals = await hardhatMySimpleToken.decimals();
+
+        expect(18).to.equal(decimals);
     })
 });
