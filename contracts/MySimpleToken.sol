@@ -3,11 +3,6 @@ pragma solidity ^0.8.0;
 
 interface IERC20 {
     /**
-     * @dev Burns the `amount` of tokens from the caller's address
-     */
-    function burn(uint256 amount) external;
-
-    /**
      * @dev Transfers `tokens` amount of tokens to address `to` and fires the Transfer event.
      * Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event.
      */
@@ -26,19 +21,9 @@ interface IERC20 {
     function transferFrom(address from, address to, uint tokens) external returns (bool);
 
     /**
-     * @dev Emits the `amount` of tokens to the `to` address
-     */
-    function mint(address recipient, uint256 amount) external;
-
-    /**
      * @dev Returns the amount which `spender` is still allowed to withdraw from `tokenOwner`.
      */
     function allowance(address tokenOwner, address spender) external view returns (uint);
-
-    /**
-     * @dev Returns the owner of the contract instance
-     */
-    function minter() external view returns (address);
 
     /**
      * @dev Returns the total token supply.
@@ -76,7 +61,26 @@ interface IERC20 {
     event Transfer(address indexed from, address indexed to, uint tokens);
 }
 
-contract MySimpleToken is IERC20 {
+interface Burnable {
+    /**
+     * @dev Burns the `amount` of tokens from the caller's address
+     */
+    function burn(uint256 amount) external;
+}
+
+interface Mintable {
+    /**
+     * @dev Emits the `amount` of tokens to the `to` address
+     */
+    function mint(address recipient, uint256 amount) external;
+
+    /**
+     * @dev Returns the owner of the contract instance
+     */
+    function minter() external view returns (address);
+}
+
+contract MySimpleToken is IERC20, Burnable, Mintable {
 
     address private _minter;
 

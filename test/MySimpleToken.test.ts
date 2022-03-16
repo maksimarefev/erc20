@@ -1,27 +1,27 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { expect } from "chai";
+import { ethers } from "hardhat";
+import { Signer, Contract, ContractFactory, Event, BigNumber } from "ethers";
 
 describe("MySimpleToken", function () {
-    const initialSupply = 1000000;
-    let MySimpleToken;
-    let alice;
-    let bob;
-    let hardhatMySimpleToken;
+    const initialSupply: number = 1000000;
+    let alice: Signer;
+    let bob: Signer;
+    let hardhatMySimpleToken: Contract;
 
     beforeEach(async function () {
         [alice, bob] = await ethers.getSigners();
-        MySimpleToken = await ethers.getContractFactory("MySimpleToken");
+        const MySimpleToken: ContractFactory = await ethers.getContractFactory("MySimpleToken");
         hardhatMySimpleToken = await MySimpleToken.deploy(initialSupply);
     })
 
-    function assertTransferEvent(event, from, to, value) {
+    function assertTransferEvent(event: Event, from: string, to: string, value: number) {
         expect("Transfer").to.equal(event.event);
         expect(from).to.equal(event.args.from);
         expect(to).to.equal(event.args.to);
         expect(value).to.equal(event.args.tokens.toNumber());
     }
 
-    function assertApprovalEvent(event, tokenOwner, spender, value) {
+    function assertApprovalEvent(event: Event, tokenOwner: string, spender: string, value: number) {
         expect("Approval").to.equal(event.event);
         expect(tokenOwner).to.equal(event.args.tokenOwner);
         expect(spender).to.equal(event.args.spender);
@@ -29,7 +29,7 @@ describe("MySimpleToken", function () {
     }
 
     it("Should not allow a non-minter to mint tokens", async () => {
-        const bobAddress = await bob.getAddress();
+        const bobAddress: string = await bob.getAddress();
 
         try {
             await hardhatMySimpleToken.connect(bob).mint(bobAddress, 10);
@@ -40,54 +40,54 @@ describe("MySimpleToken", function () {
     })
 
     it("Should allow the minter to mint tokens", async () => {
-        const tokensToMint = 100;
-        const bobAddress = await bob.getAddress();
-        const balanceOfBobBeforeMinting = await hardhatMySimpleToken.balanceOf(bobAddress);
-        const totalSupplyBeforeMinting = await hardhatMySimpleToken.totalSupply();
+        const tokensToMint: number = 100;
+        const bobAddress: string = await bob.getAddress();
+        const balanceOfBobBeforeMinting: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const totalSupplyBeforeMinting: BigNumber = await hardhatMySimpleToken.totalSupply();
 
-        const mintTx = await hardhatMySimpleToken.mint(bobAddress, tokensToMint);
-        const mintTxReceipt = await mintTx.wait();
+        const mintTx: any = await hardhatMySimpleToken.mint(bobAddress, tokensToMint);
+        const mintTxReceipt: any = await mintTx.wait();
 
         expect(1, mintTxReceipt.events.length)
         assertTransferEvent(mintTxReceipt.events[0], ethers.constants.AddressZero, bobAddress, tokensToMint);
-        const balanceOfBobAfterMinting = await hardhatMySimpleToken.balanceOf(bobAddress);
-        const totalSupplyAfterMinting = await hardhatMySimpleToken.totalSupply();
-        expect(tokensToMint).to.equal(balanceOfBobAfterMinting - balanceOfBobBeforeMinting);
-        expect(tokensToMint).to.equal(totalSupplyAfterMinting - totalSupplyBeforeMinting);
+        const balanceOfBobAfterMinting: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const totalSupplyAfterMinting: BigNumber = await hardhatMySimpleToken.totalSupply();
+        expect(tokensToMint).to.equal(balanceOfBobAfterMinting.sub(balanceOfBobBeforeMinting).toNumber());
+        expect(tokensToMint).to.equal(totalSupplyAfterMinting.sub(totalSupplyBeforeMinting).toNumber());
     })
 
     it("Should allow to burn owned tokens", async () => {
-        const amountToBurn = 100;
-        const aliceAddress = await alice.getAddress();
-        const balanceOfAliceBeforeBurning = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const amountToBurn: number = 100;
+        const aliceAddress: string = await alice.getAddress();
+        const balanceOfAliceBeforeBurning: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
 
-        const burnTx = await hardhatMySimpleToken.burn(amountToBurn);
-        const burnTxReceipt = await burnTx.wait();
+        const burnTx: any = await hardhatMySimpleToken.burn(amountToBurn);
+        const burnTxReceipt: any = await burnTx.wait();
 
         expect(1, burnTxReceipt.events.length);
         assertTransferEvent(burnTxReceipt.events[0], aliceAddress, ethers.constants.AddressZero, amountToBurn);
-        const balanceOfAliceAfterBurning = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const balanceOfAliceAfterBurning: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
         expect(balanceOfAliceBeforeBurning.toNumber() - amountToBurn).to.equal(balanceOfAliceAfterBurning.toNumber());
     })
 
     it("Should allow to transfer approved tokens", async () => {
-        const amountToTransfer = 100;
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
-        const balanceOfAliceBeforeTransfer = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const balanceOfBobBeforeTransfer = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const amountToTransfer: number = 100;
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
+        const balanceOfAliceBeforeTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const balanceOfBobBeforeTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
 
-        const approveTx = await hardhatMySimpleToken.approve(bobAddress, amountToTransfer);
-        const approveTxReceipt = await approveTx.wait();
-        const transferTx = await hardhatMySimpleToken.connect(bob).transferFrom(aliceAddress, bobAddress, amountToTransfer);
-        const transferTxReceipt = await transferTx.wait();
+        const approveTx: any = await hardhatMySimpleToken.approve(bobAddress, amountToTransfer);
+        const approveTxReceipt: any = await approveTx.wait();
+        const transferTx: any = await hardhatMySimpleToken.connect(bob).transferFrom(aliceAddress, bobAddress, amountToTransfer);
+        const transferTxReceipt: any = await transferTx.wait();
 
         expect(1).to.equal(approveTxReceipt.events.length);
         assertApprovalEvent(approveTxReceipt.events[0], aliceAddress, bobAddress, amountToTransfer);
         expect(1).to.equal(transferTxReceipt.events.length);
         assertTransferEvent(transferTxReceipt.events[0], aliceAddress, bobAddress, amountToTransfer);
-        const balanceOfAliceAfterTransfer = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const balanceOfBobAfterTransfer = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const balanceOfAliceAfterTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const balanceOfBobAfterTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
         expect(balanceOfAliceBeforeTransfer.toNumber() - amountToTransfer)
             .to.equal(balanceOfAliceAfterTransfer.toNumber(), "Alice' balance should have decreased by " + amountToTransfer + " after transfer")
         expect(balanceOfBobBeforeTransfer.toNumber() + amountToTransfer)
@@ -95,19 +95,19 @@ describe("MySimpleToken", function () {
     })
 
     it("Should allow to transfer owned tokens", async () => {
-        const amountToTransfer = 100;
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
-        const balanceOfAliceBeforeTransfer = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const balanceOfBobBeforeTransfer = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const amountToTransfer: number = 100;
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
+        const balanceOfAliceBeforeTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const balanceOfBobBeforeTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
 
-        const transferTx = await hardhatMySimpleToken.transfer(bobAddress, amountToTransfer);
-        const transferTxReceipt = await transferTx.wait();
+        const transferTx: any = await hardhatMySimpleToken.transfer(bobAddress, amountToTransfer);
+        const transferTxReceipt: any = await transferTx.wait();
 
         expect(1, transferTxReceipt.events.length);
         assertTransferEvent(transferTxReceipt.events[0], aliceAddress, bobAddress, amountToTransfer);
-        const balanceOfAliceAfterTransfer = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const balanceOfBobAfterTransfer = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const balanceOfAliceAfterTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const balanceOfBobAfterTransfer: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
         expect(balanceOfAliceBeforeTransfer.toNumber() - amountToTransfer)
             .to.equal(balanceOfAliceAfterTransfer.toNumber(), "Alice' balance should have decreased by " + amountToTransfer + " after transfer");
         expect(balanceOfBobBeforeTransfer.toNumber() + amountToTransfer)
@@ -115,10 +115,10 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to transfer insufficient amount of tokens", async () => {
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
-        const balanceOfAlice = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const amountToTransfer = balanceOfAlice + 1;
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
+        const balanceOfAlice: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const amountToTransfer: number = balanceOfAlice.toNumber() + 1;
 
         try {
             await hardhatMySimpleToken.transfer(bobAddress, amountToTransfer);
@@ -129,10 +129,10 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to transferFrom insufficient amount of tokens", async () => {
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
-        const balanceOfAlice = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const amountToTransfer = balanceOfAlice.toNumber() + 1;
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
+        const balanceOfAlice: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const amountToTransfer: number = balanceOfAlice.toNumber() + 1;
 
         try {
             await hardhatMySimpleToken.transferFrom(aliceAddress, bobAddress, amountToTransfer);
@@ -152,7 +152,7 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to overflow total supply", async () => {
-        const aliceAddress = await alice.getAddress();
+        const aliceAddress: string = await alice.getAddress();
 
         try {
             await hardhatMySimpleToken.mint(aliceAddress, ethers.constants.MaxUint256);
@@ -163,9 +163,9 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to burn more tokens than a caller posesses", async () => {
-        const aliceAddress = await alice.getAddress();
-        const aliceBalance = await hardhatMySimpleToken.balanceOf(aliceAddress);
-        const tokensToBurn = aliceBalance.toNumber() + 1;
+        const aliceAddress: string = await alice.getAddress();
+        const aliceBalance: BigNumber = await hardhatMySimpleToken.balanceOf(aliceAddress);
+        const tokensToBurn: number = aliceBalance.toNumber() + 1;
         
         try {
             await hardhatMySimpleToken.burn(tokensToBurn);
@@ -176,10 +176,10 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to transferFrom if the source address does not hold sufficient amount of tokens", async () => {
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
-        const bobBalance = await hardhatMySimpleToken.balanceOf(bobAddress);
-        const amountToTransfer = bobBalance.toNumber() + 1;
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
+        const bobBalance: BigNumber = await hardhatMySimpleToken.balanceOf(bobAddress);
+        const amountToTransfer: number = bobBalance.toNumber() + 1;
 
         try {
             await hardhatMySimpleToken.transferFrom(bobAddress, aliceAddress, amountToTransfer);
@@ -190,11 +190,11 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to transferFrom if the source address does not hold sufficient amount of tokens", async () => {
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
         await hardhatMySimpleToken.mint(bobAddress, 1);
-        const bobToAliceAllowance = await hardhatMySimpleToken.allowance(bobAddress, aliceAddress);
-        const amountToTransfer = bobToAliceAllowance.toNumber() + 1;
+        const bobToAliceAllowance: BigNumber = await hardhatMySimpleToken.allowance(bobAddress, aliceAddress);
+        const amountToTransfer: number = bobToAliceAllowance.toNumber() + 1;
 
         try {
             await hardhatMySimpleToken.transferFrom(bobAddress, aliceAddress, amountToTransfer);
@@ -205,22 +205,22 @@ describe("MySimpleToken", function () {
     })
 
     it("Should allow to transfer 0 tokens", async () => {
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
 
-        const transferTx = await hardhatMySimpleToken.transfer(bobAddress, 0);
-        const transferTxReceipt = await transferTx.wait();
+        const transferTx: any = await hardhatMySimpleToken.transfer(bobAddress, 0);
+        const transferTxReceipt: any = await transferTx.wait();
 
         expect(1, transferTxReceipt.events.length)
         assertTransferEvent(transferTxReceipt.events[0], aliceAddress, bobAddress, 0);
     })
 
     it("Should allow to transferFrom 0 tokens", async () => {
-        const aliceAddress = await alice.getAddress();
-        const bobAddress = await bob.getAddress();
+        const aliceAddress: string = await alice.getAddress();
+        const bobAddress: string = await bob.getAddress();
 
-        const transferTx = await hardhatMySimpleToken.transferFrom(bobAddress, aliceAddress, 0);
-        const transferTxReceipt = await transferTx.wait();
+        const transferTx: any = await hardhatMySimpleToken.transferFrom(bobAddress, aliceAddress, 0);
+        const transferTxReceipt: any = await transferTx.wait();
 
         expect(1, transferTxReceipt.events.length)
         assertTransferEvent(transferTxReceipt.events[0], bobAddress, aliceAddress, 0);
@@ -236,7 +236,7 @@ describe("MySimpleToken", function () {
     })
 
     it("Should not allow to transferFrom to the zero address", async () => {
-        const bobAddress = await bob.getAddress();
+        const bobAddress: string = await bob.getAddress();
 
         try {
             await hardhatMySimpleToken.transferFrom(bobAddress, ethers.constants.AddressZero, 0);
@@ -247,27 +247,27 @@ describe("MySimpleToken", function () {
     })
 
     it("Should return valid minter", async () => {
-        const aliceAddress = await alice.getAddress();
+        const aliceAddress: string = await alice.getAddress();
 
-        const minter = await hardhatMySimpleToken.minter();
+        const minter: string = await hardhatMySimpleToken.minter();
 
         expect(aliceAddress).to.equal(minter);
     })
 
     it("Should return valid name", async () => {
-        const name = await hardhatMySimpleToken.name();
+        const name: string = await hardhatMySimpleToken.name();
 
         expect("MySimpleToken").to.equal(name);
     })
 
     it("Should return valid symbol", async () => {
-        const symbol = await hardhatMySimpleToken.symbol();
+        const symbol: string = await hardhatMySimpleToken.symbol();
 
         expect("MST").to.equal(symbol);
     })
 
     it("Should return valid decimals", async () => {
-        const decimals = await hardhatMySimpleToken.decimals();
+        const decimals: number = await hardhatMySimpleToken.decimals();
 
         expect(18).to.equal(decimals);
     })
