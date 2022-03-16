@@ -8,8 +8,15 @@ In the root folder create *sercret.json* file and fill it the following properti
 ```
 
 ## How to deploy the contract
-1. From the root folder run ``` npx hardhat run --network rinkeby scripts/deploy.js ```
+1. From the root folder run ``` npx hardhat run --network rinkeby scripts/deploy.ts ```
 2. Save the contract address for future interactions
+
+## How to verify the contract
+1. Add the following property to the *secret.json* file:<br/>
+```
+    "ETHERSCAN_API_KEY": [YOUR ETHERSCAN APY KEY]
+```
+2. From the root folder run ``` npx hardhat verify --network rinkeby [contract address] 0 ```
 
 ## How to run a task
 From the root folder run<br/>``` npx hardhat [task name] --network rinkeby --contract-address [contract address] --argument [argument value] ```<br/>Example:<br/>``` npx hardhat transfer --network rinkeby --contract-address 0xdFFD4DEA4e382A7eA6a728b188DDDbF78DB76677 --to 0x12d8f31923aa0acc543b96733bc0ed348ef44970 --tokens 0 ```
@@ -56,11 +63,15 @@ MySimpleToken
 ## Project dependencies
 * @nomiclabs/ethereumjs-vm#4.2.2,
 * @nomiclabs/hardhat-ethers#2.0.5,
+* @nomiclabs/hardhat-etherscan#3.0.3,
 * @nomiclabs/hardhat-waffle#2.0.3,
 * @nomiclabs/hardhat-web3#2.0.0,
-* @nomiclabs/hardhat-etherscan#3.0.3,
+* @types/chai#4.3.0,
+* @types/mocha#9.1.0,
+* @types/node#17.0.21,
 * chai#4.3.6,
 * ethereum-waffle#4.0.0-alpha.0,
-* ethers#5.6.0,
 * hardhat#2.9.1,
-* solidity-coverage#0.7.20
+* solidity-coverage#0.7.20,
+* ts-node#10.7.0,
+* typescript#4.6.2
