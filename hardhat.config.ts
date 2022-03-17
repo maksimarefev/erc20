@@ -12,11 +12,16 @@ const config: HardhatUserConfig = {
         rinkeby: {
           url: "https://rinkeby.infura.io/v3/" + INFURA_API_KEY,
           accounts: [`0x${PRIVATE_KEY}`]
+        },
+        kovan: {
+            url: "https://kovan.infura.io/v3/" + INFURA_API_KEY,
+            accounts: [`0x${PRIVATE_KEY}`]
         }
     },
     etherscan: {
         apiKey: {
-          rinkeby: ETHERSCAN_API_KEY
+          rinkeby: ETHERSCAN_API_KEY,
+          kovan: ETHERSCAN_API_KEY
         }
     }
 };
