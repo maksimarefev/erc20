@@ -123,7 +123,7 @@ describe("MySimpleToken", function () {
         try {
             await hardhatMySimpleToken.transfer(bobAddress, amountToTransfer);
         } catch (error) {
-            expect("VM Exception while processing transaction: reverted with reason string 'Sender account does not hold sufficient balance'")
+            expect("VM Exception while processing transaction: reverted with reason string 'Source address does not hold sufficient balance'")
                 .to.equal(error.message, "Invalid error message");
         }
     })

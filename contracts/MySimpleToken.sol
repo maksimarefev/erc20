@@ -123,7 +123,7 @@ contract MySimpleToken is IERC20, Burnable, Mintable {
 
     function transfer(address to, uint tokens) public override returns (bool) {
         require(to != address(0), "Transfer to the zero address is not allowed");
-        require(_balances[msg.sender] >= tokens, 'Sender account does not hold sufficient balance');
+        require(_balances[msg.sender] >= tokens, 'Source address does not hold sufficient balance');
 
         _balances[msg.sender] -= tokens;
         _balances[to] += tokens;
@@ -142,6 +142,10 @@ contract MySimpleToken is IERC20, Burnable, Mintable {
     }
 
     function transferFrom(address from, address to, uint tokens) public override returns (bool) {
+        if (msg.sender == from) {
+            return transfer(to, tokens);
+        }
+
         require(to != address(0), "Transfer to the zero address is not allowed");
         require(_balances[from] >= tokens, 'Source address does not hold sufficient balance');
         require(_allowance[from][msg.sender] >= tokens, 'The caller is not allowed to transfer that amount of tokens');
